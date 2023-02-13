@@ -45,11 +45,11 @@
               lightImgUrl: '/public/images/logo-light.svg',
               navTo: '/',
             },
-            // desktopDarkLogoUrl: '/public/images/logo-dark.svg',
-            // desktopLightLogoUrl: '/public/images/logo-light.svg',
-            // mobileDarkLogoUrl: '/public/images/logo-dark.svg',
-            // mobileLightLogoUrl: '/public/images/logo-light.svg',
-            
+            desktopDarkLogoUrl: '/public/images/logo-dark.svg',
+            desktopLightLogoUrl: '/public/images/logo-light.svg',
+            mobileDarkLogoUrl: '/public/images/logo-dark.svg',
+            mobileLightLogoUrl: '/public/images/logo-light.svg',
+            logoUrl: '/',
 
             // menu: { 
             //   data: [{
@@ -109,6 +109,12 @@
         return location.pathname.split('/')[3] || 'BTCUSDT'
       }
       
+    </script>
+
+    <script src="https://unpkg.com/vconsole/dist/vconsole.min.js"></script>
+    <script>
+      // VConsole will be exported to `window.VConsole` by default.
+      var vConsole = new window.VConsole();
     </script>
   </body>
 </html>
