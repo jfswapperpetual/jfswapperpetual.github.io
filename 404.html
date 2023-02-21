@@ -21,87 +21,91 @@
       }
     </style>
     <script src="/s3/sdk/sdk.1.9.1.js"></script>
-    
+    <script src="/public/js/axios.min.js"></script>
   </head>
   <body>
     <div id="app"></div>
     <script>
-      const { origin, protocol, pathname } = window.location;
-      if (pathname === '/') location.href = "/en/futures/BTCUSDT"
-      const isDev = protocol === "http:";
-      FuturesSDK.createTradeUI({
-        container: document.getElementById("app"),
-        config: {
-          staticBaseUrl: `${origin}/s3/static/`, // in production, you have to change this to your static base url
-          apiBaseUrl: isDev ? `${origin}` : undefined, // in production, you don't need to configurate this, it's default as APX's url
-          futuresWsHost: "wss://fstream.apollox.finance/compress",
-          shareImgFolder: '/public/share-poster',
-          enableThemeToggle: false,
+      function checkIP() {
+        return axios({
+          method: 'get',
+          url: `https://ip.opencc.xyz/ip/v1/helper/bannedIP`
+        }).then(res => {
+          return Promise.resolve(res.data || false)
+        })
+      }
 
-          supportNetworks: ['bnb', 'eth', 'arb'],  // optional, default to ['bnb']
-          // supportLanguages: ['en', 'zh-CN'], // optional, default to all languages
-          headerConfig: {
-            logo: { 
-              darkImgUrl: '/public/images/logo-dark.svg',
-              lightImgUrl: '/public/images/logo-light.svg',
-              navTo: '/',
+      function initTradeUI() {
+        const { origin, protocol, pathname } = window.location;
+        if (pathname === '/') location.href = "/en/futures/BTCUSDT"
+        const isDev = protocol === "http:";
+        FuturesSDK.createTradeUI({
+          container: document.getElementById("app"),
+          config: {
+            staticBaseUrl: `${origin}/s3/static/`, // in production, you have to change this to your static base url
+            apiBaseUrl: isDev ? `${origin}` : undefined, // in production, you don't need to configurate this, it's default as APX's url
+            futuresWsHost: "wss://fstream.apollox.finance/compress",
+            shareImgFolder: '/public/share-poster',
+            enableThemeToggle: false,
+
+            supportNetworks: ['bnb', 'eth', 'arb'],  // optional, default to ['bnb']
+            // supportLanguages: ['en', 'zh-CN'], // optional, default to all languages
+            headerConfig: {
+              logo: { 
+                darkImgUrl: '/public/images/logo-dark.svg',
+                lightImgUrl: '/public/images/logo-light.svg',
+                navTo: '/',
+              },
+              // menu: { 
+              //   data: [{
+              //     text: {'en': 'Swap', 'zh-CN': '兑换'}, 
+              //     navTo: 'https://www.apollox.finance',
+              //   }], 
+              //   placement: 'left',
+              // },
+
+              // token: {
+              //   imgUrl: `https://cloudfutures-static.binancedev.com/cloud-futures/static/images/futures/assets/leon/logo.svg`,
+              //   navTo: 'https://dex.leonicornswap.com/swap?outputCurrency=0x2c8368f8F474Ed9aF49b87eAc77061BEb986c2f1',
+              //   lpPairAddress: '0xd0fc8ba7e267f2bc56044a7715a489d851dc6d78', // Uniswap V3: UNI-USDC
+              //   lpBaseAddress: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984', // UNI
+              //   lpQuoteAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+              //   network: 'eth',
+              //   pricePrecision: 6,
+              // },
+
+              // customerService: {
+              //   navTo: 'https://apollox.zendesk.com/hc/%lng%/requests/new',
+              // },
             },
-            desktopDarkLogoUrl: '/public/images/logo-dark.svg',
-            desktopLightLogoUrl: '/public/images/logo-light.svg',
-            mobileDarkLogoUrl: '/public/images/logo-dark.svg',
-            mobileLightLogoUrl: '/public/images/logo-light.svg',
-            logoUrl: '/',
-
-            // menu: { 
-            //   data: [{
-            //     text: {'en': 'Swap', 'zh-CN': '兑换'}, 
-            //     navTo: 'https://www.apollox.finance',
-            //   }], 
-            //   placement: 'left',
-            // },
-
-            // token: {
-            //   imgUrl: `https://cloudfutures-static.binancedev.com/cloud-futures/static/images/futures/assets/leon/logo.svg`,
-            //   navTo: 'https://dex.leonicornswap.com/swap?outputCurrency=0x2c8368f8F474Ed9aF49b87eAc77061BEb986c2f1',
-            //   lpPairAddress: '0xd0fc8ba7e267f2bc56044a7715a489d851dc6d78', // Uniswap V3: UNI-USDC
-            //   lpBaseAddress: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984', // UNI
-            //   lpQuoteAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-            //   network: 'eth',
-            //   pricePrecision: 6,
-            // },
-
-            // customerService: {
-            //   navTo: 'https://apollox.zendesk.com/hc/%lng%/requests/new',
-            // },
+            lightPalette: {
+              primaryHover: "#6B78EE", // background hover
+              primary: "#584CEA", // background; text hover,
+              sellHover: "#FD5CB7",
+              sell: "#EF3E9E",
+              buyHover: "#3CC6BE",
+              buy: "#1DB1A8",
+            },
+            loadingImage: {
+              url: "/public/loading.gif",
+            },
+            defaultTheme: "light",
+            enableThemeToggle: true,
+            isTestnet: false
           },
-          lightPalette: {
-            primaryHover: "#6B78EE", // background hover
-            primary: "#584CEA", // background; text hover,
-            sellHover: "#FD5CB7",
-            sell: "#EF3E9E",
-            buyHover: "#3CC6BE",
-            buy: "#1DB1A8",
+          state: {
+            symbol: getSymbolFromUrl(),
+            lng: getLngFromUrl(),
           },
-          loadingImage: {
-            url: "/public/loading.gif",
-          },
-          defaultTheme: "light",
-          enableThemeToggle: true,
-          isTestnet: false
-        },
-        state: {
-          symbol: getSymbolFromUrl(),
-          lng: getLngFromUrl(),
-        },
-      });
-      FuturesSDK.eventListener.on('symbolChange', (data) => {
-        window.history.replaceState({}, null, `/${getLngFromUrl()}/futures/${data.symbol}`);
-      })
-      FuturesSDK.eventListener.on('lngChange', (data) => {
-        window.history.pushState({}, null, `/${data.lng}/futures/${getSymbolFromUrl()}`)
-      })
-
-
+        });
+        FuturesSDK.eventListener.on('symbolChange', (data) => {
+          window.history.replaceState({}, null, `/${getLngFromUrl()}/futures/${data.symbol}`);
+        })
+        FuturesSDK.eventListener.on('lngChange', (data) => {
+          window.history.pushState({}, null, `/${data.lng}/futures/${getSymbolFromUrl()}`)
+        })
+      }
+      
       function getLngFromUrl() {
         return location.pathname.split('/')[1] || 'en'
       }
@@ -109,13 +113,28 @@
       function getSymbolFromUrl() {
         return location.pathname.split('/')[3] || 'BTCUSDT'
       }
-      
+
+      async function __main() {
+        // let isBanned = await checkIP().catch(async () => false)
+        let isBanned = true
+        if (!isBanned) {
+          initTradeUI()
+        } else {
+          document.body.innerHTML = `<div style="padding: 20px;margin: 20vh auto 0; max-width: 1200px; line-height: 1.5; font-size: 18px;  color: #333;">
+            <h3 style="margin: 10px 0;">温馨提示：</h3>
+            <p style="margin: 10px 0;">当前的网络环境访问权限受到限制，我们无法为中国大陆、美国、新加坡等地区提供服务，请您遵守所在国家和地区相关规定访问我们的服务。</p>
+            <p style="margin: 10px 0;">因用户所在国家和地区合规问题而导致访问网络不稳定，属于不可抗力，与平台无关，此类原因导致的交易损失不在赔付范围。</p>
+          </div>`
+        }
+      }
+      __main()
+
     </script>
 
-    <script src="https://unpkg.com/vconsole/dist/vconsole.min.js"></script>
+    <!-- <script src="https://unpkg.com/vconsole/dist/vconsole.min.js"></script>
     <script>
       // VConsole will be exported to `window.VConsole` by default.
       var vConsole = new window.VConsole();
-    </script>
+    </script> -->
   </body>
 </html>
